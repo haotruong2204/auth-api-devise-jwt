@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: companies
@@ -10,15 +12,8 @@
 #  updated_at       :datetime         not null
 #  administrator_id :integer
 #
+class CompanySerializer
+  include JSONAPI::Serializer
 
-one:
-  name: MyString
-  established_year: MyString
-  address: MyString
-  administrator_id: MyString
-
-two:
-  name: MyString
-  established_year: MyString
-  address: MyString
-  administrator_id: MyString
+  attributes :id, :name, :address, :established_year, :administrator_id
+end

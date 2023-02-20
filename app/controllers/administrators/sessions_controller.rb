@@ -5,35 +5,29 @@ class Administrators::SessionsController < Devise::SessionsController
 
   private
 
-  def respond_with(resource, options={})
+  def respond_with resource, _options = {}
     if resource.persisted?
       render json: {
         data: { code: 200, message: "Admin signed in successfully", data: current_administrator },
         status: :ok
       }
     else
-      render json: { 
-        data: { message: "Admin could not be created successfully", errors: resource.errors.full_messages},
+      render json: {
+        data: { message: "Admin could not be created successfully", errors: resource.errors.full_messages },
         status: :unprocessable_entity
       }
     end
   end
 
   def respond_to_on_destroy
-    jwt_payload = JWT.decode(request.headers["Authorization"].split(" ")[1], 
+    jwt_payload = JWT.decode(request.headers["Authorization"].split[1],
       Rails.application.credentials.fetch(:secret_key_base)).first
 
-    current_administrator = Administrator.find(jwt_payload['sub'])
+    current_administrator = Administrator.find(jwt_payload["sub"])
     if current_administrator
-      render json: { 
-        code: 200,
-        message: "Signed out successfully"
-       }, status: :ok
+      render json: { code: 200, message: "Signed out successfully" }, status: :ok
     else
-      render json: { 
-        code: 401,
-        message: "Admin has no active session"
-       }, status: :unauthorized
+      render json: { code: 401, message: "Admin has no active session" }, status: :unauthorized
     end
   end
 end

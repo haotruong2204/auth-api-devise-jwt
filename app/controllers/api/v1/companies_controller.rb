@@ -5,28 +5,29 @@ class Api::V1::CompaniesController < Api::V1::BaseController
 
   def index
     @companies = current_administrator.companies
-    render json: @companies, status: :ok
+
+    render json: { data: @companies.map { |company| CompanySerializer.new(company).serializable_hash }, status: :ok }
   end
 
   def show
-    render json: @company, status: :ok
+    render json: { data: CompanySerializer.new(@company).serializable_hash, status: :ok }
   end
 
   def create
     @company = current_administrator.companies.new(company_params)
 
     if @company.save
-      render json: @company, status: :ok
+      render json: { data: CompanySerializer.new(@company).serializable_hash, status: :ok }
     else
-      render json: { data: @company.errors.full_messages, status: "failed" }, status: :unprocessable_entity
+      render json: { data: @company.errors.full_messages, status: :unprocessable_entity }
     end
   end
 
   def update
     if @company.update(company_params)
-      render json: @company, status: :ok
+      render json: { data: CompanySerializer.new(@company).serializable_hash, status: :ok }
     else
-      render json: { data: @company.errors.full_messages, status: "failed" }, status: :unprocessable_entity
+      render json: { data: @company.errors.full_messages, status: :unprocessable_entity }
     end
   end
 
@@ -42,8 +43,8 @@ class Api::V1::CompaniesController < Api::V1::BaseController
 
   def set_company
     @company = current_administrator.companies.find params[:id]
-  rescue ActiveRecord::RecordNotFound => error
-    render json: error.message, stattus: :unauthorized
+  rescue ActiveRecord::RecordNotFound => e
+    render json: e.message, stattus: :unauthorized
   end
 
   def company_params
