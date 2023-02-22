@@ -11,6 +11,7 @@
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string(255)
+#  role                   :integer          default("super_admin")
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #
@@ -29,4 +30,6 @@ class Administrator < ApplicationRecord
          :jwt_authenticatable, jwt_revocation_strategy: self
 
   has_many :companies
+
+  enum role: { super_admin: 1, admin: 2, manager: 3, editor: 4, collaborator: 5 }
 end
